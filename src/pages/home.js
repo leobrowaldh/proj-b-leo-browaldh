@@ -1,23 +1,17 @@
 import React from 'react'
+import StarWarsRock from "../img/StarWarsRock.jpg";
+import '../css/home.css';
+import Image from 'react-bootstrap/Image';
+import Col from 'react-bootstrap/Col';
 
 export default function Home() 
 {
+    const backgroundImage = StarWarsRock;
   return (
-<div className="container py-4" id="home">
-    <div className="bg-body-tertiary p-5 rounded">
-        <div className="col-sm-8 py-5 mx-auto">
-            <h1 className="display-5 fw-normal">Welcome to React Application</h1>
-            <p className="fs-5">
-               This React application is implemented with react-bootstrap. 
-            </p>
-            <p>
-                We build React components and pages to display data fetched from below remote WebApi
-            </p>
-            <p>
-                <a className="btn btn-primary" href="https://appmusicwebapinet8.azurewebsites.net/swagger/index.html" role="button">AppMusic WebApi</a>
-            </p>
-        </div>
+    <div className="container py-4" id="home">
+        <Col xs={10} md={8}>
+            <Image className='background' src={backgroundImage} alt='Starwars rockband playing live' rounded/>
+        </Col>     
     </div>
-</div>
   )
 }

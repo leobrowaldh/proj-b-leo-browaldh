@@ -1,12 +1,11 @@
 import React, {useState, useEffect} from 'react'
 import musicService from '../services/music-group-service';
 
-import {JournalRichtext} from 'react-bootstrap-icons'
-import {Link } from "react-router-dom";
+import {MusicNoteBeamed, MusicNoteList} from 'react-bootstrap-icons'
 
-export function Musicalbums(props) {
+export function MusicBands(props) {
 
-  const [albums, setAlbums] = React.useState({});
+  const [groups, setGroups] = React.useState({});
   const [filter, setFilter] = useState(props.searchFilter || "");
   const [pageNr, setPageNr] = useState(0);
   const [pageMax, setPageMax] = useState(0);
@@ -16,9 +15,9 @@ export function Musicalbums(props) {
   (async () => {
 
       const service = new musicService(`https://appmusicwebapinet8.azurewebsites.net/api`);
-      const a = await service.readAlbumsAsync(0, true, props.searchFilter);
-      setAlbums(a);
-      setPageMax(a.pageCount);
+      const data = await service.readMusicGroupsAsync(0, true, props.searchFilter);
+      setGroups(data);
+      setPageMax(data.pageCount);
 
     })();
 
@@ -27,53 +26,50 @@ export function Musicalbums(props) {
   
 
   const onSearch = async (e) => {
-    e.preventDefault();  //In case the button is of type submit (default for a button inside a form)
+    e.preventDefault();  
 
     const service = new musicService(`https://appmusicwebapinet8.azurewebsites.net/api`);
-    const _serviceData = await service.readAlbumsAsync(0, true, e.searchFilter);
+    const data = await service.readMusicGroupsAsync(0, true, e.searchFilter);
 
-    setAlbums(_serviceData);
+    setGroups(data);
     setFilter(e.searchFilter);
-    setPageMax(_serviceData.pageCount);
+    setPageMax(data.pageCount);
   }
 
   const onPrevClick = async (e) => {
     if (pageNr > 0) {
-      //own pager activity
       const service = new musicService(`https://appmusicwebapinet8.azurewebsites.net/api`);
-      const _serviceData = await service.readAlbumsAsync(pageNr - 1, true, filter);
+      const data = await service.readMusicGroupsAsync(pageNr - 1, true, filter);
 
       setPageNr (pageNr - 1);
-      setAlbums(_serviceData);
+      setGroups(data);
     }
   }
   const onNextClick = async (e) => {
 
       if (pageNr < pageMax-1) {
-        //own pager activity
         const service = new musicService(`https://appmusicwebapinet8.azurewebsites.net/api`);
-        const _serviceData = await service.readAlbumsAsync(pageNr + 1, true, filter);
+        const _serviceData = await service.readMusicGroupsAsync(pageNr + 1, true, filter);
         
         setPageNr(pageNr + 1);
-        setAlbums(_serviceData);
+        setGroups(_serviceData);
         }
   }
 
 
   return (
     <div className="container px-4 py-4" id="list-of-items">
-    <h2 className="pb-2 border-bottom">
-        <JournalRichtext className="bi text-body-secondary flex-shrink-0 me-3" width="1.75em" height="1.75em"/>
-         List of Albums</h2>
+      <h2 className="pb-2 border-bottom">
+          <MusicNoteList className="bi text-body-secondary flex-shrink-0 me-3" width="1.75em" height="1.75em"/>
+          List of Bands 
+          <MusicNoteBeamed className="bi text-body-secondary flex-shrink-0 me-3" width="1.75em" height="1.75em"/>
+      </h2>
 
+      <ListSearch searchFilter={''} onSearch={onSearch}/>
+      <p>Total items listed: {groups.dbItemsCount || ""}</p>
+      <List groups={groups}/>
+      <ListPager onPrevClick={onPrevClick} onNextClick={onNextClick}/>
 
-    <p>Below are some of the worlds most famous albums.</p>
-    <p>Subscribe to the WebApi</p>
-
-
-    <ListSearch searchFilter={''} onSearch={onSearch}/>
-    <List albums={albums}/>
-    <ListPager onPrevClick={onPrevClick} onNextClick={onNextClick}/>
     </div>
   )
 }
@@ -104,14 +100,10 @@ export function ListSearch(props) {
 export function ListPager(props) {
 
   const onPrevClick = (e) => {
-    //own pager activity
 
-    //Lift event
     if (props.onPrevClick) props.onPrevClick(e);
   }
   const onNextClick = (e) => {
-        //own pager activity
-            //Lift event
     if (props.onNextClick) props.onNextClick(e);
   }
   return (
@@ -135,23 +127,16 @@ export function List(props) {
         <div className="col-md-7 col-lg-10">
             <div className="row mb-2 text-center">
               <div className="col-md-6 themed-grid-head-col">Name</div>
-              <div className="col-md-3 themed-grid-head-col">Release Year</div>
-              <div className="col-md-3 themed-grid-head-col">Copies sold</div>
+              <div className="col-md-3 themed-grid-head-col">Genere</div>
             </div>
 
-            {props.albums?.pageItems?.map((b, index) => (
-              <Link to={`/albumview/${b.albumId}`}>
+            {props.groups?.pageItems?.map((b, index) => (
                 <div key={index} className="row mb-2 text-center">
                 <div className="col-md-6 themed-grid-col">
                     {b.name}
                 </div>
-                <div className="col-md-3 themed-grid-col">{b.releaseYear}</div>
-
-                <div className="col-md-3 themed-grid-col">
-                    {b.copiesSold}
+                <div className="col-md-3 themed-grid-col">{b.strGenre}</div>
                 </div>
-                </div>
-              </Link>
 
             ))} 
         </div>
